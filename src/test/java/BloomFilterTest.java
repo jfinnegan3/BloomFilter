@@ -15,8 +15,8 @@ public class BloomFilterTest {
     @Before
     public void setUp() throws Exception {
         stringList = new ArrayList<String>(50);
-        filter1 = new BloomFilter<String>(50);
-        filter2 = new BloomFilter<String>(stringList);
+        filter1 = new BloomFilter<String>(50, 0);
+        filter2 = new BloomFilter<String>(stringList, 0);
     }
 
     @Test
