@@ -1,6 +1,11 @@
 package filters;
 
+import java.lang.reflect.Array;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Scanner;
 
 /**
@@ -54,7 +59,7 @@ public class BloomFilter<E> extends BloomFilterAbstract<E> {
 //            System.out.println(1/hashSeeds[i]);
 //            System.out.println((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1);
 //            System.out.println((int)(((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1)*(myBooleanArray.length+1)));
-            index = (int) (((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1)*(myBooleanArray.length+1));
+            index = (int) (((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1)*(myBooleanArray.length));
 //            System.out.println(index);
             myBooleanArray[index] = true;
         }
@@ -63,8 +68,8 @@ public class BloomFilter<E> extends BloomFilterAbstract<E> {
     public boolean test(E input) {
         int index;
         for(int i = 0; i < hashSeeds.length; i++) {
-            index = (int) (((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1)*(myBooleanArray.length+1));
-            System.out.println(index);
+            index = (int) (((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1)*(myBooleanArray.length));
+//            System.out.println(index);
             if (myBooleanArray[index] == false)
                 return false;
         }
@@ -83,21 +88,79 @@ public class BloomFilter<E> extends BloomFilterAbstract<E> {
 
     public static void main(String[] args) {
 
-        BloomFilter<String> bfLowLow = new BloomFilter<String>(10, 2);
-        BloomFilter<String> bfHighHigh = new BloomFilter<String>(4000, 10);
-        BloomFilter<String> bfLowHigh = new BloomFilter<String>(10, 10);
-        BloomFilter<String> bfHighLow = new BloomFilter<String>(4000, 2);
+        BloomFilter<String> bfLowLow = new BloomFilter<String>(100, 2);
+        BloomFilter<String> bfHighHigh = new BloomFilter<String>(500, 15);
+        BloomFilter<String> bfLowHigh = new BloomFilter<String>(100, 15);
+        BloomFilter<String> bfHighLow = new BloomFilter<String>(500, 2);
 
+        HashSet<String> stringSet = new HashSet<String>();
 
         Scanner scanner = new Scanner(System.in);
 
         String current;
-        while(scanner.hasNext()) {
-            current = scanner.next();
+//        while(scanner.hasNext()) {
+//            current = scanner.next();
+//
+//
+//            if(current.equals("end"))
+//                break;
+
+        for (int i = 0; i < 1000; i++) {
+
+            current = new BigInteger(130, new SecureRandom()).toString();
+
             bfLowLow.add(current);
             bfHighHigh.add(current);
             bfLowHigh.add(current);
             bfHighLow.add(current);
+
+            stringSet.add(current);
         }
+
+
+        boolean anyFalseNegatives = false;
+        //verification
+        for(String testString : stringSet) {
+            if (!(bfLowLow.test(testString) && bfHighHigh.test(testString)
+                && bfHighLow.test(testString) && bfLowHigh.test(testString))) {
+                System.out.println("False Negative!");
+                anyFalseNegatives = true;
+            }
+        }
+
+        if(anyFalseNegatives) {
+            System.out.println("There were false negatives. Algorithm Incorrect");
+        } else {
+
+            ArrayList<String> manyStrings = new ArrayList<String>();
+            String temp;
+            for(int i = 0; i < 2000; i++) {
+                temp = new BigInteger(130, new SecureRandom()).toString();
+                System.out.println(temp);
+                manyStrings.add(temp);
+            }
+            int ll = 0;
+            int lh = 0;
+            int hl = 0;
+            int hh = 0;
+
+            for (String testString : manyStrings) {
+                if (bfLowLow.test(testString))
+                    ll++;
+                if (bfHighHigh.test(testString))
+                    hh++;
+                if (bfHighLow.test( testString))
+                    hl++;
+                if (bfLowHigh.test(testString))
+                    lh++;
+            }
+
+            System.out.println("False Positive Rates: ");
+            System.out.println("Large Table, Many Hashes: " + hh);
+            System.out.println("Large Table, Few Hashes:  " + hl);
+            System.out.println("Small Table, Many Hashes: " + lh);
+            System.out.println("Small Table, Few Hashes:  " + ll);
+        }
+
     }
 }
