@@ -1,8 +1,5 @@
 package filters;
 
-
-import javafx.scene.effect.Bloom;
-
 import java.util.Collection;
 import java.util.Scanner;
 
@@ -13,20 +10,20 @@ import java.util.Scanner;
 public class BloomFilter<E> extends BloomFilterAbstract<E> {
 
     boolean[] myBooleanArray;
-    int[] hashSeeds;
+    double[] hashSeeds;
 
     public BloomFilter(int lengthOfTable, int numberOfHashes) {
-        this(lengthOfTable, new int[numberOfHashes]);
+        this(lengthOfTable, new double[numberOfHashes]);
         makeSeeds(numberOfHashes);
     }
 
-    public BloomFilter(int lengthOfTable, int[] hashseeds) {
+    public BloomFilter(int lengthOfTable, double[] hashSeeds) {
         myBooleanArray = new boolean[lengthOfTable];
-        this.hashSeeds = hashseeds;
+        this.hashSeeds = hashSeeds;
     }
 
     public BloomFilter(Collection<E> collection, int numberOfHashes) {
-        this(collection.size()*10, numberOfHashes);
+        this(collection.size(), numberOfHashes);
         for (E entry : collection) {
             add(entry);
         }
@@ -34,9 +31,9 @@ public class BloomFilter<E> extends BloomFilterAbstract<E> {
 
     public void makeSeeds(int numberOfSeeds) {
         if (hashSeeds == null);
-            hashSeeds = new int[numberOfSeeds];
+            hashSeeds = new double[numberOfSeeds];
         for(int i = 0; i < numberOfSeeds; i++) {
-            hashSeeds[i] = (int)(Math.random()*myBooleanArray.length);
+            hashSeeds[i] = Math.random() +1;
         }
     }
 
@@ -53,7 +50,12 @@ public class BloomFilter<E> extends BloomFilterAbstract<E> {
     public void add(E input) {
         int index;
         for(int i = 0; i < hashSeeds.length; i++) {
-            index = (int) (((Math.pow( input.hashCode() , (double)(-hashSeeds[i])))%1)*(myBooleanArray.length+1));
+//            System.out.println(input.hashCode());
+//            System.out.println(1/hashSeeds[i]);
+//            System.out.println((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1);
+//            System.out.println((int)(((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1)*(myBooleanArray.length+1)));
+            index = (int) (((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1)*(myBooleanArray.length+1));
+//            System.out.println(index);
             myBooleanArray[index] = true;
         }
     }
@@ -61,7 +63,8 @@ public class BloomFilter<E> extends BloomFilterAbstract<E> {
     public boolean test(E input) {
         int index;
         for(int i = 0; i < hashSeeds.length; i++) {
-            index = (int) (((Math.pow( input.hashCode() , (double)(-hashSeeds[i])))%1)*(myBooleanArray.length+1));
+            index = (int) (((Math.pow( input.hashCode() , 1/hashSeeds[i]))%1)*(myBooleanArray.length+1));
+            System.out.println(index);
             if (myBooleanArray[index] == false)
                 return false;
         }
@@ -91,7 +94,10 @@ public class BloomFilter<E> extends BloomFilterAbstract<E> {
         String current;
         while(scanner.hasNext()) {
             current = scanner.next();
-
+            bfLowLow.add(current);
+            bfHighHigh.add(current);
+            bfLowHigh.add(current);
+            bfHighLow.add(current);
         }
     }
 }

@@ -15,8 +15,8 @@ public class BloomFilterTest {
     @Before
     public void setUp() throws Exception {
         stringList = new ArrayList<String>(50);
-        filter1 = new BloomFilter<String>(50, 0);
-        filter2 = new BloomFilter<String>(stringList, 0);
+        filter1 = new BloomFilter<String>(50, 2);
+        filter2 = new BloomFilter<String>(stringList, 2);
     }
 
     @Test
@@ -32,8 +32,11 @@ public class BloomFilterTest {
     }
 
     @Test
-    public void testHashFunction() {
-        assert(filter1.)
+    public void testFilter() {
+        String testString = "test";
+        filter1.add(testString);
+        assert(filter1.test(testString));
+        assert(!filter2.test(testString));
     }
 
     public void testInsertData() {
