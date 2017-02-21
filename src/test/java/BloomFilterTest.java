@@ -33,7 +33,7 @@ public class BloomFilterTest {
 
     @Test
     public void testHashFunction() {
-
+        assert(filter1.)
     }
 
     public void testInsertData() {

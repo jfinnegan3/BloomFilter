@@ -7,6 +7,6 @@ public abstract class BloomFilterAbstract<E> {
 
     public abstract void add(E thing);
 
-    public abstract boolean test();
+    public abstract boolean test(E thing);
 
 }
